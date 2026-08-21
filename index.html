@@ -3,266 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel ProTerra - Monitoramento</title>
+    <title>GeoAlerta - Painel de Operações</title>
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
+            --bg-dark: #0b1120;
+            --bg-sidebar: #0f172a;
+            --bg-card: #1e293b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent: #38bdf8;
-            --danger: #ef4444;
-            --safe: #10b981;
+            --brand-green: #10b981;
+            --brand-red: #ef4444;
+            --brand-cyan: #06b6d4;
+            --border-color: #334155;
         }
-        body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 20px; 
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
+            padding: 20px 0;
+        }
+
+        .logo-area {
+            padding: 0 20px 20px 20px;
+            display: flex;
             align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
         }
-        .container {
-            max-width: 1000px;
-            width: 100%;
+        
+        .logo-icon {
+            color: var(--brand-cyan);
+            font-size: 24px;
         }
-        .header { 
-            text-align: center; 
-            margin-bottom: 30px; 
-        }
-        .header h1 { 
-            margin: 0; 
-            color: var(--accent); 
-            font-size: 2.5em; 
-            letter-spacing: 1px;
-        }
-        .header p {
+
+        .menu-item {
+            padding: 12px 25px;
             color: var(--text-muted);
-            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
         }
-        .status-banner { 
-            padding: 25px; 
-            border-radius: 12px; 
-            text-align: center; 
-            font-size: 2em; 
-            font-weight: bold; 
-            margin-bottom: 40px; 
-            transition: all 0.3s ease; 
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .status-normal { 
-            background-color: rgba(16, 185, 129, 0.2); 
-            color: var(--safe); 
-            border: 2px solid var(--safe);
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1); 
-        }
-        .status-alert { 
-            background-color: rgba(239, 68, 68, 0.2); 
-            color: var(--danger); 
-            border: 2px solid var(--danger);
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.4); 
-            animation: pulse 1.5s infinite; 
-        }
-        @keyframes pulse { 
-            0% { transform: scale(1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); } 
-            50% { transform: scale(1.02); box-shadow: 0 0 40px rgba(239, 68, 68, 0.7); } 
-            100% { transform: scale(1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); } 
-        }
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-            gap: 20px; 
-        }
-        .card { 
-            background-color: var(--card-bg); 
-            padding: 25px; 
-            border-radius: 12px; 
-            text-align: center; 
-            border: 1px solid #334155; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        .card h3 { 
-            margin-top: 0; 
-            color: var(--text-muted); 
-            font-size: 1.1em;
-            text-transform: uppercase;
-        }
-        .value { 
-            font-size: 3.5em; 
-            font-weight: bold; 
-            margin: 15px 0; 
+
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255,255,255,0.05);
             color: var(--text-main);
+            border-left: 3px solid var(--brand-cyan);
         }
-        .bar-bg { 
-            background-color: #334155; 
-            height: 8px; 
-            border-radius: 4px; 
-            overflow: hidden; 
-            margin-top: 20px; 
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
         }
-        .bar-fill { 
-            height: 100%; 
-            background-color: var(--accent); 
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .badges {
+            display: flex;
+            gap: 15px;
+        }
+
+        .badge {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--brand-green);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* Status Banner */
+        .status-banner {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .status-banner.alert {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: var(--brand-red);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+
+        .status-text h2 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--brand-green);
+            box-shadow: 0 0 10px var(--brand-green);
+        }
+
+        .alert .indicator { background-color: var(--brand-red); box-shadow: 0 0 15px var(--brand-red); }
+
+        /* Admin Button */
+        .admin-btn {
+            background-color: var(--brand-cyan);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s;
+        }
+
+        .admin-btn:hover { background-color: #0891b2; }
+        
+        .admin-btn.danger {
+            background-color: var(--brand-red);
+            display: none; /* Escondido por padrão, aparece no alerta */
+            animation: pulse-btn 1.5s infinite;
+        }
+
+        @keyframes pulse-btn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Grid Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .progress-bg {
+            height: 6px;
+            background-color: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--brand-cyan);
             width: 0%;
-            transition: width 0.5s ease, background-color 0.5s ease; 
+            transition: 0.5s ease;
         }
-        .footer {
-            margin-top: 50px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 1.2em;
-            padding: 20px;
-            border-top: 1px solid #334155;
-        }
-        .risco-destaque {
-            color: var(--text-main);
-            font-size: 1.5em;
-            font-weight: bold;
-        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>PROTERRA</h1>
-            <p>Painel de Monitoramento de Deslizamentos</p>
+
+    <div class="sidebar">
+        <div class="logo-area">
+            <i class="fa-solid fa-satellite-dish logo-icon"></i>
+            <div>
+                <strong style="display: block; font-size: 18px;">GeoAlerta RMR</strong>
+                <span style="font-size: 12px; color: var(--text-muted);">Centro de Operações</span>
+            </div>
         </div>
-        
-        <div id="statusBanner" class="status-banner status-normal">
-            Conectando aos sensores...
+
+        <a href="#" class="menu-item active"><i class="fa-solid fa-border-all"></i> Dashboard</a>
+        <a href="#" class="menu-item"><i class="fa-solid fa-map-location-dot"></i> Mapa</a>
+        <a href="#" class="menu-item"><i class="fa-solid fa-microchip"></i> Sensores</a>
+        <a href="#" class="menu-item"><i class="fa-solid fa-triangle-exclamation"></i> Alertas</a>
+    </div>
+
+    <div class="main-content">
+        <div class="top-header">
+            <div>
+                <h3 style="margin: 0; color: var(--text-muted); font-weight: 400;">Monitoramento Inteligente de Deslizamentos</h3>
+                <h1 style="margin: 5px 0 0 0; font-size: 24px;">Dashboard da Região Metropolitana</h1>
+            </div>
+            <div class="badges">
+                <div class="badge"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> Tempo real</div>
+                <div class="badge" style="background: transparent; border-color: var(--border-color); color: var(--text-muted);">
+                    Sensores Ativos: 4
+                </div>
+            </div>
+        </div>
+
+        <div id="bannerStatus" class="status-banner">
+            <div class="status-text">
+                <span style="font-size: 12px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;">STATUS</span>
+                <h2 id="textoStatus"><div class="indicator"></div> Monitoramento Normal</h2>
+            </div>
+            <button id="btnReset" class="admin-btn danger" onclick="resetarAlarme()">
+                <i class="fa-solid fa-shield-halved"></i> Reconhecer e Desarmar (Admin)
+            </button>
         </div>
 
         <div class="grid">
             <div class="card">
-                <h3>Umidade do Solo</h3>
-                <div class="value"><span id="valSolo">0</span><span style="font-size: 0.5em; color: var(--text-muted);">%</span></div>
-                <div class="bar-bg"><div id="barSolo" class="bar-fill"></div></div>
+                <div class="card-header"><span>Umidade do Solo</span><i class="fa-solid fa-droplet"></i></div>
+                <div class="card-value"><span id="valSolo">0</span><span style="font-size: 16px; color: var(--text-muted);">%</span></div>
+                <div class="progress-bg"><div id="barSolo" class="progress-fill"></div></div>
             </div>
-            
             <div class="card">
-                <h3>Chuva Acumulada</h3>
-                <div class="value"><span id="valChuva">0</span><span style="font-size: 0.5em; color: var(--text-muted);">%</span></div>
-                <div class="bar-bg"><div id="barChuva" class="bar-fill"></div></div>
+                <div class="card-header"><span>Acúmulo de Chuva</span><i class="fa-solid fa-cloud-rain"></i></div>
+                <div class="card-value"><span id="valChuva">0</span><span style="font-size: 16px; color: var(--text-muted);">%</span></div>
+                <div class="progress-bg"><div id="barChuva" class="progress-fill"></div></div>
             </div>
-            
             <div class="card">
-                <h3>Vibração do Solo</h3>
-                <div class="value"><span id="valVib">0</span><span style="font-size: 0.5em; color: var(--text-muted);">%</span></div>
-                <div class="bar-bg"><div id="barVib" class="bar-fill"></div></div>
+                <div class="card-header"><span>Vibração</span><i class="fa-solid fa-wave-square"></i></div>
+                <div class="card-value"><span id="valVib">0</span><span style="font-size: 16px; color: var(--text-muted);">%</span></div>
+                <div class="progress-bg"><div id="barVib" class="progress-fill"></div></div>
             </div>
-            
             <div class="card">
-                <h3>Inclinação</h3>
-                <div class="value" id="valInc" style="font-size: 2.5em; color: var(--accent);">ESTÁVEL</div>
+                <div class="card-header"><span>Risco Calculado</span><i class="fa-solid fa-chart-line"></i></div>
+                <div class="card-value" id="valRisco" style="color: var(--brand-cyan);">0%</div>
+                <div style="font-size: 14px; color: var(--text-muted);" id="statusInclinacao">Inclinação Estável</div>
             </div>
-        </div>
-
-        <div class="footer">
-            Risco Total Calculado pelo Sistema: <span id="valRisco" class="risco-destaque">0%</span>
         </div>
     </div>
 
     <script>
-        // Credenciais do Banco
         const SUPABASE_URL = "https://cgcowxxgjdppckvscvef.supabase.co";
         const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnY293eHhnamRwcGNrdnNjdmVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMDA0MjcsImV4cCI6MjEwMjg3NjQyN30.ZXvjRI-W7CEOX-j5QYTQEmLQvjYn-mAwXIHQJYtfVYM";
+
+        // Variável de controle visual do alarme no site
+        let alarmeTravadoNoSite = false;
 
         async function buscarDados() {
             try {
                 const resposta = await fetch(`${SUPABASE_URL}/rest/v1/sensor_readings?select=*&order=id.desc&limit=1`, {
-                    headers: {
-                        'apikey': ANON_KEY,
-                        'Authorization': `Bearer ${ANON_KEY}`
-                    }
+                    headers: { 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` }
                 });
-                
                 if (resposta.ok) {
                     const dados = await resposta.json();
-                    if (dados && dados.length > 0) {
-                        atualizarPainel(dados[0]);
-                    }
+                    if (dados && dados.length > 0) atualizarPainel(dados[0]);
                 }
-            } catch (erro) {
-                console.error("Falha na comunicação com o banco:", erro);
-            }
+            } catch (erro) { console.error(erro); }
         }
 
         function atualizarPainel(linha) {
-            // Extrai os valores exatos enviados pela WeMos
             const solo = parseFloat(linha.umidade_solo) || 0;
             const chuva = parseFloat(linha.chuva) || 0;
             const vib = parseFloat(linha.vibracao) || 0;
             const inclinado = linha.inclinacao >= 100;
 
-            // --- LÓGICA DE RISCO (Cópia exata do Arduino) ---
             let riscoTotal = solo + chuva + vib;
             if (inclinado) riscoTotal = 99;
             if (riscoTotal > 99) riscoTotal = 99;
 
-            let alerta = false;
-            if (inclinado) {
-                alerta = true;
-            } else if ((solo + chuva) > 64) {
-                alerta = true;
-            } else if ((solo + vib) >= 70 && chuva === 0) {
-                alerta = true;
-            } else if (riscoTotal >= 70) {
-                if (solo >= 20) {
-                    alerta = true;
-                }
-            }
-            // ------------------------------------------------
+            let condicaoAlerta = false;
+            if (inclinado) condicaoAlerta = true;
+            else if ((solo + chuva) > 64) condicaoAlerta = true;
+            else if ((solo + vib) >= 70 && chuva === 0) condicaoAlerta = true;
+            else if (riscoTotal >= 70 && solo >= 20) condicaoAlerta = true;
 
-            // Atualiza Interface - Textos
+            // Se as condições físicas estouraram, trava o alarme visualmente
+            if (condicaoAlerta) alarmeTravadoNoSite = true;
+
+            // Interface
             document.getElementById('valSolo').innerText = solo;
-            document.getElementById('valChuva').innerText = chuva;
-            document.getElementById('valVib').innerText = vib;
-            document.getElementById('valRisco').innerText = riscoTotal + "%";
+            document.getElementById('barSolo').style.width = solo + '%';
             
-            // Atualiza Interface - Barras e Cores
-            const corPerigo = "var(--danger)";
-            const corNormal = "var(--accent)";
+            document.getElementById('valChuva').innerText = chuva;
+            document.getElementById('barChuva').style.width = (chuva * 5) + '%';
+            
+            document.getElementById('valVib').innerText = vib;
+            document.getElementById('barVib').style.width = vib + '%';
 
-            const barSolo = document.getElementById('barSolo');
-            barSolo.style.width = solo + '%';
-            barSolo.style.backgroundColor = (solo > 40) ? corPerigo : corNormal;
+            document.getElementById('valRisco').innerText = riscoTotal + "%";
+            document.getElementById('statusInclinacao').innerText = inclinado ? "⚠️ DESLIZAMENTO DETECTADO" : "Inclinação Estável";
 
-            const barChuva = document.getElementById('barChuva');
-            barChuva.style.width = (chuva * 5) + '%'; // Multiplica visualmente pois max é 19
-            barChuva.style.backgroundColor = (chuva > 15) ? corPerigo : corNormal;
+            const banner = document.getElementById('bannerStatus');
+            const textoStatus = document.getElementById('textoStatus');
+            const btnReset = document.getElementById('btnReset');
 
-            const barVib = document.getElementById('barVib');
-            barVib.style.width = vib + '%';
-            barVib.style.backgroundColor = (vib > 50) ? corPerigo : corNormal;
-
-            const elemInc = document.getElementById('valInc');
-            if (inclinado) {
-                elemInc.innerText = "EM QUEDA!";
-                elemInc.style.color = corPerigo;
+            if (alarmeTravadoNoSite) {
+                banner.className = "status-banner alert";
+                textoStatus.innerHTML = '<div class="indicator"></div> PERIGO IMINENTE (ALERTA ATIVO)';
+                textoStatus.style.color = "var(--brand-red)";
+                document.getElementById('valRisco').style.color = "var(--brand-red)";
+                btnReset.style.display = "flex"; // Mostra o botão de admin
             } else {
-                elemInc.innerText = "ESTÁVEL";
-                elemInc.style.color = corNormal;
-            }
-
-            // Atualiza o Alerta Principal
-            const banner = document.getElementById('statusBanner');
-            if (alerta) {
-                banner.className = "status-banner status-alert";
-                banner.innerText = "🚨 ALERTA CRÍTICO: RISCO DE DESLIZAMENTO 🚨";
-                document.getElementById('valRisco').style.color = corPerigo;
-            } else {
-                banner.className = "status-banner status-normal";
-                banner.innerText = "MONITORAMENTO SEGURO";
-                document.getElementById('valRisco').style.color = "var(--text-main)";
+                banner.className = "status-banner";
+                textoStatus.innerHTML = '<div class="indicator"></div> Monitoramento Normal';
+                textoStatus.style.color = "var(--text-main)";
+                document.getElementById('valRisco').style.color = "var(--brand-cyan)";
+                btnReset.style.display = "none";
             }
         }
 
-        // Inicia a busca a cada 2 segundos
+        // Função do botão Admin
+        function resetarAlarme() {
+            const senha = prompt("Acesso Restrito. Digite a senha de administrador:");
+            if (senha === "1234") { // Senha simples para o TCC
+                alarmeTravadoNoSite = false;
+                alert("Alarme desarmado com sucesso pelo painel.");
+                // O site volta ao normal. O Buzzer físico precisa de lógica bidirecional (explicado abaixo).
+            } else if (senha !== null) {
+                alert("Senha incorreta!");
+            }
+        }
+
+        // Busca dados a cada 1 segundo (Dobro da velocidade anterior)
+        setInterval(buscarDados, 1000);
         buscarDados();
-        setInterval(buscarDados, 2000);
     </script>
 </body>
 </html>
