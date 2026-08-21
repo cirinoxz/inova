@@ -289,11 +289,13 @@
                 });
                 if (resposta.ok) {
                     const dados = await resposta.json();
-                    if (dados && dados.length > 0) atualizarPainel(dados[0]);
+                    // Só atualiza os gráficos se NÃO for a linha de comando!
+                    if (dados && dados.length > 0 && dados[0].sensor_id !== "COMANDO_RESET") {
+                        atualizarPainel(dados[0]);
+                    }
                 }
             } catch (erro) { console.error(erro); }
         }
-
         function atualizarPainel(linha) {
             const solo = parseFloat(linha.umidade_solo) || 0;
             const chuva = parseFloat(linha.chuva) || 0;
@@ -354,22 +356,34 @@
             document.getElementById('modalSenha').style.display = 'none';
         }
 
-        function confirmarSenha() {
+        async function confirmarSenha() {
             const senhaDigitada = document.getElementById('inputSenha').value;
             
-            // Senha configurada como 1234
             if (senhaDigitada === "1234") { 
                 alarmeTravadoNoSite = false; 
                 fecharModal();
-                // O código para avisar o banco de dados (que vai avisar a WeMos e calar o Arduino) entrará aqui!
+                
+                // DISPARA O COMANDO PARA A WEMOS LER
+                try {
+                    await fetch(SUPABASE_URL + '/rest/v1/sensor_readings', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'apikey': ANON_KEY, 
+                            'Authorization': `Bearer ${ANON_KEY}`,
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({
+                            sensor_id: "COMANDO_RESET",
+                            temperatura: 0, umidade_ar: 0, umidade_solo: 0, chuva: 0, vibracao: 0, inclinacao: 0
+                        })
+                    });
+                } catch(e) { console.error(e); }
+                
             } else {
                 document.getElementById('erroSenha').style.display = 'block'; 
             }
         }
-
-        document.getElementById('inputSenha').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') confirmarSenha();
-        });
 
         setInterval(buscarDados, 1000);
         buscarDados();
