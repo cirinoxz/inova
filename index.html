@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel ProTerra - Monitoramento</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --danger: #ef4444;
+            --safe: #10b981;
+        }
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 20px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+        }
+        .header h1 { 
+            margin: 0; 
+            color: var(--accent); 
+            font-size: 2.5em; 
+            letter-spacing: 1px;
+        }
+        .header p {
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        .status-banner { 
+            padding: 25px; 
+            border-radius: 12px; 
+            text-align: center; 
+            font-size: 2em; 
+            font-weight: bold; 
+            margin-bottom: 40px; 
+            transition: all 0.3s ease; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .status-normal { 
+            background-color: rgba(16, 185, 129, 0.2); 
+            color: var(--safe); 
+            border: 2px solid var(--safe);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1); 
+        }
+        .status-alert { 
+            background-color: rgba(239, 68, 68, 0.2); 
+            color: var(--danger); 
+            border: 2px solid var(--danger);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.4); 
+            animation: pulse 1.5s infinite; 
+        }
+        @keyframes pulse { 
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); } 
+            50% { transform: scale(1.02); box-shadow: 0 0 40px rgba(239, 68, 68, 0.7); } 
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); } 
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px; 
+        }
+        .card { 
+            background-color: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 12px; 
+            text-align: center; 
+            border: 1px solid #334155; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .card h3 { 
+            margin-top: 0; 
+            color: var(--text-muted); 
+            font-size: 1.1em;
+            text-transform: uppercase;
+        }
+        .value { 
+            font-size: 3.5em; 
+            font-weight: bold; 
+            margin: 15px 0; 
+            color: var(--text-main);
+        }
+        .bar-bg { 
+            background-color: #334155; 
+            height: 8px; 
+            border-radius: 4px; 
+            overflow: hidden; 
+            margin-top: 20px; 
+        }
+        .bar-fill { 
+            height: 100%; 
+            background-color: var(--accent); 
+            width: 0%;
+            transition: width 0.5s ease, background-color 0.5s ease; 
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.2em;
+            padding: 20px;
+            border-top: 1px solid #334155;
+        }
+        .risco-destaque {
+            color: var(--text-main);
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PROTERRA</h1>
+            <p>Painel de Monitoramento de Deslizamentos</p>
+        </div>
+        
+        <div id="statusBanner" class="status-banner status-normal">
+            Conectando aos sensores...
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Umidade do Solo</h3>
+                <div class="value"><span id="valSolo">0</span><span style="font-size: 0.5em; color: var(--text-muted);">%</span></div>
+                <div class="bar-bg"><div id="barSolo" class="bar-fill"></div></div>
+            </div>
+            
+            <div class="card">
+                <h3>Chuva Acumulada</h3>
+                <div class="value"><span id="valChuva">0</span><span style="font-size: 0.5em; color: var(--text-muted);">%</span></div>
+                <div class="bar-bg"><div id="barChuva" class="bar-fill"></div></div>
+            </div>
+            
+            <div class="card">
+                <h3>Vibração do Solo</h3>
+                <div class="value"><span id="valVib">0</span><span style="font-size: 0.5em; color: var(--text-muted);">%</span></div>
+                <div class="bar-bg"><div id="barVib" class="bar-fill"></div></div>
+            </div>
+            
+            <div class="card">
+                <h3>Inclinação</h3>
+                <div class="value" id="valInc" style="font-size: 2.5em; color: var(--accent);">ESTÁVEL</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Risco Total Calculado pelo Sistema: <span id="valRisco" class="risco-destaque">0%</span>
+        </div>
+    </div>
+
+    <script>
+        // Credenciais do Banco
+        const SUPABASE_URL = "https://cgcowxxgjdppckvscvef.supabase.co";
+        const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnY293eHhnamRwcGNrdnNjdmVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMDA0MjcsImV4cCI6MjEwMjg3NjQyN30.ZXvjRI-W7CEOX-j5QYTQEmLQvjYn-mAwXIHQJYtfVYM";
+
+        async function buscarDados() {
+            try {
+                const resposta = await fetch(`${SUPABASE_URL}/rest/v1/sensor_readings?select=*&order=id.desc&limit=1`, {
+                    headers: {
+                        'apikey': ANON_KEY,
+                        'Authorization': `Bearer ${ANON_KEY}`
+                    }
+                });
+                
+                if (resposta.ok) {
+                    const dados = await resposta.json();
+                    if (dados && dados.length > 0) {
+                        atualizarPainel(dados[0]);
+                    }
+                }
+            } catch (erro) {
+                console.error("Falha na comunicação com o banco:", erro);
+            }
+        }
+
+        function atualizarPainel(linha) {
+            // Extrai os valores exatos enviados pela WeMos
+            const solo = parseFloat(linha.umidade_solo) || 0;
+            const chuva = parseFloat(linha.chuva) || 0;
+            const vib = parseFloat(linha.vibracao) || 0;
+            const inclinado = linha.inclinacao >= 100;
+
+            // --- LÓGICA DE RISCO (Cópia exata do Arduino) ---
+            let riscoTotal = solo + chuva + vib;
+            if (inclinado) riscoTotal = 99;
+            if (riscoTotal > 99) riscoTotal = 99;
+
+            let alerta = false;
+            if (inclinado) {
+                alerta = true;
+            } else if ((solo + chuva) > 64) {
+                alerta = true;
+            } else if ((solo + vib) >= 70 && chuva === 0) {
+                alerta = true;
+            } else if (riscoTotal >= 70) {
+                if (solo >= 20) {
+                    alerta = true;
+                }
+            }
+            // ------------------------------------------------
+
+            // Atualiza Interface - Textos
+            document.getElementById('valSolo').innerText = solo;
+            document.getElementById('valChuva').innerText = chuva;
+            document.getElementById('valVib').innerText = vib;
+            document.getElementById('valRisco').innerText = riscoTotal + "%";
+            
+            // Atualiza Interface - Barras e Cores
+            const corPerigo = "var(--danger)";
+            const corNormal = "var(--accent)";
+
+            const barSolo = document.getElementById('barSolo');
+            barSolo.style.width = solo + '%';
+            barSolo.style.backgroundColor = (solo > 40) ? corPerigo : corNormal;
+
+            const barChuva = document.getElementById('barChuva');
+            barChuva.style.width = (chuva * 5) + '%'; // Multiplica visualmente pois max é 19
+            barChuva.style.backgroundColor = (chuva > 15) ? corPerigo : corNormal;
+
+            const barVib = document.getElementById('barVib');
+            barVib.style.width = vib + '%';
+            barVib.style.backgroundColor = (vib > 50) ? corPerigo : corNormal;
+
+            const elemInc = document.getElementById('valInc');
+            if (inclinado) {
+                elemInc.innerText = "EM QUEDA!";
+                elemInc.style.color = corPerigo;
+            } else {
+                elemInc.innerText = "ESTÁVEL";
+                elemInc.style.color = corNormal;
+            }
+
+            // Atualiza o Alerta Principal
+            const banner = document.getElementById('statusBanner');
+            if (alerta) {
+                banner.className = "status-banner status-alert";
+                banner.innerText = "🚨 ALERTA CRÍTICO: RISCO DE DESLIZAMENTO 🚨";
+                document.getElementById('valRisco').style.color = corPerigo;
+            } else {
+                banner.className = "status-banner status-normal";
+                banner.innerText = "MONITORAMENTO SEGURO";
+                document.getElementById('valRisco').style.color = "var(--text-main)";
+            }
+        }
+
+        // Inicia a busca a cada 2 segundos
+        buscarDados();
+        setInterval(buscarDados, 2000);
+    </script>
+</body>
+</html>
