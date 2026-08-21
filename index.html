@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProTerra - Painel de Operações</title>
-    <!-- Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -50,11 +49,6 @@
             margin-bottom: 20px;
         }
         
-        .logo-icon {
-            color: var(--brand-cyan);
-            font-size: 24px;
-        }
-
         .menu-item {
             padding: 12px 25px;
             color: var(--text-muted);
@@ -86,11 +80,7 @@
             margin-bottom: 30px;
         }
 
-        .badges {
-            display: flex;
-            gap: 15px;
-        }
-
+        .badges { display: flex; gap: 15px; }
         .badge {
             background-color: rgba(16, 185, 129, 0.15);
             color: var(--brand-green);
@@ -123,44 +113,21 @@
             box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
         }
 
-        .status-text h2 {
-            margin: 0 0 5px 0;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--brand-green);
-            box-shadow: 0 0 10px var(--brand-green);
-        }
-
+        .status-text h2 { margin: 0 0 5px 0; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+        .indicator { width: 10px; height: 10px; border-radius: 50%; background-color: var(--brand-green); box-shadow: 0 0 10px var(--brand-green); }
         .alert .indicator { background-color: var(--brand-red); box-shadow: 0 0 15px var(--brand-red); }
 
         /* Admin Button */
         .admin-btn {
             background-color: var(--brand-cyan);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: 0.2s;
+            color: #fff; border: none; padding: 10px 20px;
+            border-radius: 8px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: 0.2s;
         }
-
         .admin-btn:hover { background-color: #0891b2; }
-        
         .admin-btn.danger {
             background-color: var(--brand-red);
-            display: none; /* Escondido por padrão, aparece no alerta */
+            display: none; 
             animation: pulse-btn 1.5s infinite;
         }
 
@@ -172,54 +139,80 @@
 
         /* Grid Cards */
         .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px; margin-bottom: 30px;
         }
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; }
+        .card-header { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 14px; margin-bottom: 15px; }
+        .card-value { font-size: 32px; font-weight: 700; margin-bottom: 15px; }
+        .progress-bg { height: 6px; background-color: var(--border-color); border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; background-color: var(--brand-cyan); width: 0%; transition: 0.5s ease; }
 
-        .card {
-            background-color: var(--bg-card);
+        /* --- ESTILOS DO MODAL DE SENHA --- */
+        .modal-overlay {
+            display: none; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 17, 32, 0.85);
+            backdrop-filter: blur(5px);
+            justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .modal-box {
+            background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 25px;
+            padding: 30px; border-radius: 12px;
+            width: 320px; text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slide-up 0.3s ease-out;
         }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 15px;
+        @keyframes slide-up {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-
-        .card-value {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 15px;
+        .modal-box h3 { margin-top: 0; color: var(--text-main); font-size: 20px; }
+        .modal-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+        .modal-box input {
+            width: 85%; padding: 12px; margin-bottom: 10px;
+            background: var(--bg-sidebar); border: 1px solid var(--border-color);
+            color: white; border-radius: 8px; outline: none; font-size: 16px;
+            text-align: center; letter-spacing: 2px;
         }
-
-        .progress-bg {
-            height: 6px;
-            background-color: var(--border-color);
-            border-radius: 3px;
-            overflow: hidden;
+        .modal-box input:focus { border-color: var(--brand-cyan); }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-cancel {
+            background: transparent; border: 1px solid var(--border-color);
+            color: white; padding: 10px; border-radius: 8px; cursor: pointer; flex: 1; font-weight: 600;
         }
-
-        .progress-fill {
-            height: 100%;
-            background-color: var(--brand-cyan);
-            width: 0%;
-            transition: 0.5s ease;
-        }
+        .btn-cancel:hover { background: rgba(255,255,255,0.05); }
+        .modal-buttons .admin-btn { flex: 1; justify-content: center; margin: 0; }
+        #erroSenha { color: var(--brand-red); font-weight: 600; display: none; margin: 5px 0; }
 
     </style>
 </head>
 <body>
 
+    <!-- A JANELA DO MODAL FLUTUANTE -->
+    <div id="modalSenha" class="modal-overlay">
+        <div class="modal-box">
+            <i class="fa-solid fa-shield-halved" style="font-size: 30px; color: var(--brand-cyan); margin-bottom: 15px;"></i>
+            <h3>Acesso Restrito</h3>
+            <p>Informe a senha de administrador para desarmar a sirene e reconhecer o perigo.</p>
+            
+            <input type="password" id="inputSenha" placeholder="••••" autocomplete="off" />
+            <div id="erroSenha">Senha incorreta!</div>
+
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+                <button class="admin-btn" onclick="confirmarSenha()">Desarmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="logo-area">
-            <i class="fa-solid fa-satellite-dish logo-icon"></i>
+            <!-- AQUI ENTRA A SUA LOGO! Se o nome do arquivo for diferente de logo.png, altere aqui no 'src' -->
+            <img src="logo.png" alt="ProTerra" style="width: 45px; height: 45px; object-fit: contain; border-radius: 8px;">
             <div>
                 <strong style="display: block; font-size: 18px;">ProTerra</strong>
                 <span style="font-size: 12px; color: var(--text-muted);">Centro de Operações</span>
@@ -232,11 +225,12 @@
         <a href="#" class="menu-item"><i class="fa-solid fa-triangle-exclamation"></i> Alertas</a>
     </div>
 
+    <!-- CONTEÚDO PRINCIPAL -->
     <div class="main-content">
         <div class="top-header">
             <div>
                 <h3 style="margin: 0; color: var(--text-muted); font-weight: 400;">Monitoramento Inteligente de Deslizamentos</h3>
-                <h1 style="margin: 5px 0 0 0; font-size: 24px;">Dashboard da Região Metropolitana</h1>
+                <h1 style="margin: 5px 0 0 0; font-size: 24px;">Painel Geral - ProTerra</h1>
             </div>
             <div class="badges">
                 <div class="badge"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> Tempo real</div>
@@ -246,16 +240,18 @@
             </div>
         </div>
 
+        <!-- BANNER DE STATUS -->
         <div id="bannerStatus" class="status-banner">
             <div class="status-text">
                 <span style="font-size: 12px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;">STATUS</span>
                 <h2 id="textoStatus"><div class="indicator"></div> Monitoramento Normal</h2>
             </div>
-            <button id="btnReset" class="admin-btn danger" onclick="resetarAlarme()">
-                <i class="fa-solid fa-shield-halved"></i> Reconhecer e Desarmar (Admin)
+            <button id="btnReset" class="admin-btn danger" onclick="abrirModal()">
+                <i class="fa-solid fa-shield-halved"></i> Reconhecer e Desarmar
             </button>
         </div>
 
+        <!-- CARDS -->
         <div class="grid">
             <div class="card">
                 <div class="card-header"><span>Umidade do Solo</span><i class="fa-solid fa-droplet"></i></div>
@@ -284,7 +280,6 @@
         const SUPABASE_URL = "https://cgcowxxgjdppckvscvef.supabase.co";
         const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnY293eHhnamRwcGNrdnNjdmVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMDA0MjcsImV4cCI6MjEwMjg3NjQyN30.ZXvjRI-W7CEOX-j5QYTQEmLQvjYn-mAwXIHQJYtfVYM";
 
-        // Variável de controle visual do alarme no site
         let alarmeTravadoNoSite = false;
 
         async function buscarDados() {
@@ -315,10 +310,8 @@
             else if ((solo + vib) >= 70 && chuva === 0) condicaoAlerta = true;
             else if (riscoTotal >= 70 && solo >= 20) condicaoAlerta = true;
 
-            // Se as condições físicas estouraram, trava o alarme visualmente
             if (condicaoAlerta) alarmeTravadoNoSite = true;
 
-            // Interface
             document.getElementById('valSolo').innerText = solo;
             document.getElementById('barSolo').style.width = solo + '%';
             
@@ -340,7 +333,7 @@
                 textoStatus.innerHTML = '<div class="indicator"></div> PERIGO IMINENTE (ALERTA ATIVO)';
                 textoStatus.style.color = "var(--brand-red)";
                 document.getElementById('valRisco').style.color = "var(--brand-red)";
-                btnReset.style.display = "flex"; // Mostra o botão de admin
+                btnReset.style.display = "flex"; 
             } else {
                 banner.className = "status-banner";
                 textoStatus.innerHTML = '<div class="indicator"></div> Monitoramento Normal';
@@ -350,19 +343,34 @@
             }
         }
 
-        // Função do botão Admin
-        function resetarAlarme() {
-            const senha = prompt("Acesso Restrito. Digite a senha de administrador:");
-            if (senha === "1234") { // Senha simples para o TCC
-                alarmeTravadoNoSite = false;
-                alert("Alarme desarmado com sucesso pelo painel.");
-                // O site volta ao normal. O Buzzer físico precisa de lógica bidirecional (explicado abaixo).
-            } else if (senha !== null) {
-                alert("Senha incorreta!");
+        function abrirModal() {
+            document.getElementById('modalSenha').style.display = 'flex';
+            document.getElementById('inputSenha').value = ''; 
+            document.getElementById('erroSenha').style.display = 'none'; 
+            setTimeout(() => document.getElementById('inputSenha').focus(), 100);
+        }
+
+        function fecharModal() {
+            document.getElementById('modalSenha').style.display = 'none';
+        }
+
+        function confirmarSenha() {
+            const senhaDigitada = document.getElementById('inputSenha').value;
+            
+            // Senha configurada como 1234
+            if (senhaDigitada === "1234") { 
+                alarmeTravadoNoSite = false; 
+                fecharModal();
+                // O código para avisar o banco de dados (que vai avisar a WeMos e calar o Arduino) entrará aqui!
+            } else {
+                document.getElementById('erroSenha').style.display = 'block'; 
             }
         }
 
-        // Busca dados a cada 1 segundo (Dobro da velocidade anterior)
+        document.getElementById('inputSenha').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') confirmarSenha();
+        });
+
         setInterval(buscarDados, 1000);
         buscarDados();
     </script>
